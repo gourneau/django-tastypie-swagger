@@ -76,14 +76,14 @@ class ResourcesView(TastypieApiMixin, SwaggerApiDataMixin, JSONView):
     """
     Provide a top-level resource listing for swagger
 
-    This JSON must confor to https://github.com/wordnik/swagger-core/wiki/Resource-Listing
+    This JSON must conform to https://github.com/wordnik/swagger-core/wiki/Resource-Listing
     """
 
     def get_context_data(self, *args, **kwargs):
         context = super(ResourcesView, self).get_context_data(*args, **kwargs)
 
         # Construct schema endpoints from resources
-        apis = [{'path': '/%s' % name} for name, res in self.tastypie_api._registry.items()]
+        apis = [{'path': '/%s' % name} for name in sorted(self.tastypie_api._registry.keys())]
         context.update({
             'basePath': self.request.build_absolute_uri(reverse('tastypie_swagger:schema')),
             'apis': apis,
@@ -110,7 +110,7 @@ class SchemaView(TastypieApiMixin, SwaggerApiDataMixin, JSONView):
 
         context = super(SchemaView, self).get_context_data(*args, **kwargs)
         context.update({
-            'basePath': '',
+            'basePath': '/',
             'apis': mapping.build_apis(),
         })
         return context
